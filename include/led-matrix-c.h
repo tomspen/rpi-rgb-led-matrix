@@ -1,6 +1,7 @@
 /* -*- mode: c; c-basic-offset: 2; indent-tabs-mode: nil; -*-
  * Copyright (C) 2013 Henner Zeller <h.zeller@acm.org>
- *
+ *  
+ * 这个程序是免费的软件; 你可以根据自由软件基金会版本 2 发布的 GNU 通用公共许可证的条款重新分发和/或修改它
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation version 2.
@@ -40,26 +41,32 @@ struct LedCanvas;
 struct LedFont;
 
 /**
- * Parameters to create a new matrix.
+ * 创建一个新矩阵的参数
+ * Parameters to create a new matrix. 
  *
+ * 要获取默认值, 没有设置的参数要被初始化为0, so在设置任何内容之前，您应该将该结构清零。
  * To get the defaults, non-set values have to be initialized to zero, so you
  * should zero out this struct before setting anything.
  */
 struct RGBLedMatrixOptions {
   /*
+   * 使用的硬件映射的名称, 如果此处传递 NULL, 使用默认值
    * Name of the hardware mapping used. If passed NULL here, the default
    * is used.
    */
   const char *hardware_mapping;
 
-  /* The "rows" are the number of rows supported by the display, so 32 or 16.
+  /*The "rows" 是显示器支持的行数 
+   *The "rows" are the number of rows supported by the display, so 32 or 16.
    * Default: 32.
-   * Corresponding flag: --led-rows
+   * Corresponding flag: --led-rows //相应的标记
    */
   int rows;
 
-  /* The "cols" are the number of columns per panel. Typically something
+  /* The "cols" 是每个面板的列数, 通常是32, 但是64也是可能的, 有时甚至是40
+   * The "cols" are the number of columns per panel. Typically something
    * like 32, but also 64 is possible. Sometimes even 40.
+   * cols * chain_length 是整个显示器的长度, 因此您可以将 64 宽显示器表示为
    * cols * chain_length is the total length of the display, so you can
    * represent a 64 wide display as cols=32, chain=2 or cols=64, chain=1;
    * same thing.
@@ -67,13 +74,16 @@ struct RGBLedMatrixOptions {
    */
   int cols;
 
-  /* The chain_length is the number of displays daisy-chained together
+  /* The chain_length 是菊花链式连接在一起的显示器数量
+   * The chain_length is the number of displays daisy-chained together
    * (output of one connected to input of next). Default: 1
    * Corresponding flag: --led-chain
    */
   int chain_length;
 
-  /* The number of parallel chains connected to the Pi; in old Pis with 26
+  /* PI 并行链的数量, 老pis 有26 GPIO 引脚, 这是1, 新pis有40借口引脚, 也可以是
+   * 2或3, 因此，垂直方向上的有效像素数为rows * parallel
+   * The number of parallel chains connected to the Pi; in old Pis with 26
    * GPIO pins, that is 1, in newer Pis with 40 interfaces pins, that can
    * also be 2 or 3. The effective number of pixels in vertical direction is
    * then thus rows * parallel. Default: 1
@@ -81,14 +91,18 @@ struct RGBLedMatrixOptions {
    */
   int parallel;
 
-  /* Set PWM bits used for output. Default is 11, but if you only deal with
+  /* 设置使用PWM bits 输出, 默认是11, 但如果您只处理有限的漫画颜色，1 可能就足够了.
+   * 较低需要较少的 CPU 并提高刷新率。 
+   * Set PWM bits used for output. Default is 11, but if you only deal with
    * limited comic-colors, 1 might be sufficient. Lower require less CPU and
    * increases refresh-rate.
    * Corresponding flag: --led-pwm-bits
    */
   int pwm_bits;
 
-  /* Change the base time-unit for the on-time in the lowest
+  /* 更改最低有效位的开启时间的基本时间单位（以纳秒为单位）。数字越高，
+   * 质量越好（颜色更准确，重影更少），但会对帧速率产生负面影响。
+   * Change the base time-unit for the on-time in the lowest
    * significant bit in nanoseconds.
    * Higher numbers provide better quality (more accurate color, less
    * ghosting), but have a negative impact on the frame rate.
@@ -96,38 +110,43 @@ struct RGBLedMatrixOptions {
    */
   int pwm_lsb_nanoseconds;
 
-  /* The lower bits can be time-dithered for higher refresh rate.
+  /* 较低位可以进行时间抖动以获得更高的刷新率。
+   * The lower bits can be time-dithered for higher refresh rate.
    * Corresponding flag: --led-pwm-dither-bits
    */
   int pwm_dither_bits;
 
-  /* The initial brightness of the panel in percent. Valid range is 1..100
+  /* 面板的初始亮度（以百分比表示）。 有效范围为 1..100
+   * The initial brightness of the panel in percent. Valid range is 1..100
    * Corresponding flag: --led-brightness
    */
   int brightness;
 
-  /* Scan mode: 0=progressive, 1=interlaced
+  /* Scan mode: 0=progressive(进步), 1=interlaced(交错的)
    * Corresponding flag: --led-scan-mode
    */
   int scan_mode;
 
-  /* Default row address type is 0, corresponding to direct setting of the
+  /* 默认行地址类型是0, 对应于直接设置行，而行地址类型1用于只有A/B的面板，一般是一些64x64的面板
+   * Default row address type is 0, corresponding to direct setting of the
    * row, while row address type 1 is used for panels that only have A/B,
    * typically some 64x64 panels
    */
   int row_address_type;  /* Corresponding flag: --led-row-addr-type */
 
-  /*  Type of multiplexing. 0 = direct, 1 = stripe, 2 = checker (typical 1:8)
+  /* 复用类型。 0 = 直接、1 = 条纹、2 = 格子（典型为 1:8） 
+   * Type of multiplexing. 0 = direct, 1 = stripe, 2 = checker (typical 1:8)
    */
   int multiplexing;
 
-  /** The following boolean flags are off by default **/
+  /** The following boolean flags are off by default/默认情况下，以下布尔标志处于关闭状态 **/
 
-  /* Allow to use the hardware subsystem to create pulses. This won't do
+  /* 允许使用硬件子系统来创建脉冲。 如果输出使能未连接到 GPIO 18，则这不会执行任何操作。
+   * Allow to use the hardware subsystem to create pulses. This won't do
    * anything if output enable is not connected to GPIO 18.
    * Corresponding flag: --led-hardware-pulse
    */
-  bool disable_hardware_pulsing; /* Flag: --led-hardware-pulse */
+  bool disable_hardware_pulsing; /* Flag: --led-hardware-pulse (脉动)*/
   bool show_refresh_rate;        /* Flag: --led-show-refresh   */
   bool inverse_colors;           /* Flag: --led-inverse        */
 
@@ -330,22 +349,26 @@ void led_canvas_fill(struct LedCanvas *canvas, uint8_t r, uint8_t g, uint8_t b);
 /*** API to provide double-buffering. ***/
 
 /**
+ * 创建一个带 led_matrix_swap_on_vsync() 被使用的新画布
  * Create a new canvas to be used with led_matrix_swap_on_vsync()
+ * 返回指针的所有权保留在矩阵中，而不是 free()。
  * Ownership of returned pointer stays with the matrix, don't free().
  */
 struct LedCanvas *led_matrix_create_offscreen_canvas(struct RGBLedMatrix *matrix);
 
 /**
+ * 将给定画布（使用 create_offscreen_canvas 创建）与垂直同步上当前活动的画布交换（在达到垂直同步之前会阻塞）。
  * Swap the given canvas (created with create_offscreen_canvas) with the
  * currently active canvas on vsync (blocks until vsync is reached).
- * Returns the previously active canvas. So with that, you can create double
+ * 返回先前活动的画布。 这样，您就可以创建双缓冲：(logic pingpong)
+ * Returns the previously active canvas. So with that/in that case, you can create double
  * buffering:
  *
  *   struct LedCanvas *offscreen = led_matrix_create_offscreen_canvas(...);
  *   led_canvas_set_pixel(offscreen, ...);   // not shown until swap-on-vsync
  *   offscreen = led_matrix_swap_on_vsync(matrix, offscreen);
- *   // The returned buffer, assigned to offscreen, is now the inactive buffer
- *   // fill, then swap again.
+ *   // The returned buffer, assigned to offscreen(分配到屏幕外), is now the inactive buffer
+ *   // fill, then swap again.现在是非活动缓冲区填充，然后再次交换。
  */
 struct LedCanvas *led_matrix_swap_on_vsync(struct RGBLedMatrix *matrix,
                                            struct LedCanvas *canvas);
@@ -353,8 +376,11 @@ struct LedCanvas *led_matrix_swap_on_vsync(struct RGBLedMatrix *matrix,
 uint8_t led_matrix_get_brightness(struct RGBLedMatrix *matrix);
 void led_matrix_set_brightness(struct RGBLedMatrix *matrix, uint8_t brightness);
 
+// 实用功能：从给定的缓冲区中设置包含像素的图像。//设置一个图像(从被给的缓冲区包含像素)
 // Utility function: set an image from the given buffer containting pixels.
 //
+// 画一个图像,大小"image_width" and "image_height",偏移“canvas_offset_x”、“canvas_offset_y”
+// 从画布偏移“canvas_offset_x”、“canvas_offset_y”处的像素绘制尺寸为“image_width”和“image_height”的图像
 // Draw image of size "image_width" and "image_height" from pixel at
 // canvas-offset "canvas_offset_x", "canvas_offset_y". Image will be shown
 // cropped on the edges if needed.
